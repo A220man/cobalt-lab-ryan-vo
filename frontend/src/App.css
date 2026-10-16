@@ -1,0 +1,193 @@
+/* Component-specific styles */
+
+/* Profile Form */
+.profile-form fieldset {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.profile-form legend {
+  font-weight: 600;
+  padding: 0 8px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.form-field textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  width: 100%;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 0.85rem;
+}
+
+/* Job List */
+.job-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.job-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.job-info h3 {
+  font-size: 1.1rem;
+  color: #1f2937;
+}
+
+.job-info .company {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.job-info .location {
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-new {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-scored {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.job-list-section h2,
+.ranking-section h2 {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+  color: #1f2937;
+}
+
+/* Ranking Table */
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.ranking-table th,
+.ranking-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ranking-table th {
+  font-weight: 600;
+  color: #374151;
+}
+
+.ranking-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* Evaluation Result */
+.evaluation-result {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.score-header h3 {
+  font-size: 1.1rem;
+  color: #1f2937;
+}
+
+.dimension-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+}
+
+.dimension-table th,
+.dimension-table td {
+  padding: 4px 8px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.85rem;
+}
+
+.skill-overlap,
+.dealbreaker-hits,
+.explanation {
+  font-size: 0.85rem;
+  margin: 4px 0;
+}
+
+.dealbreaker-hits {
+  color: #991b2b;
+  font-weight: 500;
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "name": "cobalt-lab-ryan-vo",
+  "owner": "A220man",
+  "email": "ryandtvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "workflows": [
+    "Create and manage candidate profiles with skills, experience, and preferences",
+    "Submit and evaluate job postings against profiles with multi-dimensional fit scoring",
+    "Rank evaluated jobs into a shortlist with transparent per-dimension breakdown"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "summary": "Work in progress: cobalt-lab-ryan-vo",
+  "status": "work-in-progress"
+}

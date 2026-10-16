@@ -1,0 +1,1 @@
+# Core package - domain logic independent of database and HTTP.
