@@ -17,8 +17,6 @@ def create_app() -> FastAPI:
         version="1.0.0",
     )
 
-    # Local development: allow all origins.  In production, configure
-    app.include_router(api_router, prefix="/api/v1")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -27,7 +25,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.include_router(api_router, prefix="/api")
+    app.include_router(api_router, prefix="/api/v1")
 
     @app.get("/api/health", tags=["health"], response_model=HealthResponse)
     def health() -> HealthResponse:
