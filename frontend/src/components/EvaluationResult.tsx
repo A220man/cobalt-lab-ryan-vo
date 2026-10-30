@@ -7,9 +7,11 @@ interface Props {
 export default function EvaluationResult({ evaluation }: Props) {
   const score = Math.round(evaluation.overall_score * 100);
 
-  const dimensionEntries = Object.entries(evaluation.dimension_scores).sort(
-    ([, a], [, b]) => b - a,
-  );
+  // Fixed dimension order matching the scoring engine design
+  const dimensionOrder = ['skills', 'experience', 'location', 'role_type', 'dealbreakers'];
+  const dimensionEntries = dimensionOrder
+    .filter((dim) => dim in evaluation.dimension_scores)
+    .map((dim) => [dim, evaluation.dimension_scores[dim]] as const);
 
   return (
     <div className="evaluation-result">
@@ -36,15 +38,13 @@ export default function EvaluationResult({ evaluation }: Props) {
 
       {evaluation.skill_overlap.length > 0 && (
         <p className="skill-overlap">
-          <strong>Skills matched:</strong>{' '}
-          {evaluation.skill_overlap.join(', ')}
+          <strong>Skills matched:</strong> {evaluation.skill_overlap.join(', ')}
         </p>
       )}
 
       {evaluation.dealbreaker_hits.length > 0 && (
         <p className="dealbreaker-hits">
-          <strong>Dealbreakers hit:</strong>{' '}
-          {evaluation.dealbreaker_hits.join(', ')}
+          <strong>Dealbreakers hit:</strong> {evaluation.dealbreaker_hits.join(', ')}
         </p>
       )}
 

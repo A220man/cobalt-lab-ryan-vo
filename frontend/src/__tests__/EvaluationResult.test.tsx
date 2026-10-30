@@ -61,4 +61,30 @@ describe('EvaluationResult', () => {
       container.querySelector('.dealbreaker-hits'),
     ).toBeNull();
   });
+
+  it('renders dimensions in fixed order: skills, experience, location, role_type, dealbreakers', () => {
+    render(<EvaluationResult evaluation={makeEvaluation()} />);
+    const rows = screen.getAllByRole('row');
+    // rows[0] is header, rows[1-5] are dimension rows
+    expect(rows[1]).toHaveTextContent('skills');
+    expect(rows[2]).toHaveTextContent('experience');
+    expect(rows[3]).toHaveTextContent('location');
+    expect(rows[4]).toHaveTextContent('role_type');
+    expect(rows[5]).toHaveTextContent('dealbreakers');
+  });
+
+  it('omits dimensions not present in dimension_scores', () => {
+    render(
+      <EvaluationResult
+        evaluation={makeEvaluation({
+          dimension_scores: { skills: 0.5, location: 0.8 },
+        })}
+      />,
+    );
+    const rows = screen.getAllByRole('row');
+    // Only skills and location should appear
+    expect(rows).toHaveLength(3); // header + 2 dimensions
+    expect(rows[1]).toHaveTextContent('skills');
+    expect(rows[2]).toHaveTextContent('location');
+  });
 });
