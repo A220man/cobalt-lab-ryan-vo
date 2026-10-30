@@ -1,6 +1,20 @@
 # Changelog
 
+## 1.2.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.1.0 — work-in-progress checkpoint
+
+### Changed
+
+- **Frontend**: `EvaluationResult` component now displays dimension scores in a fixed order (skills, experience, location, role_type, dealbreakers) matching the scoring engine design, instead of sorting by score value. This makes it easier to compare evaluations side-by-side.
+- **Tests**: Added 2 new tests for `EvaluationResult` verifying fixed dimension order and proper omission of missing dimensions.
+
+### Tests
+
+- 73 backend tests (unit + integration) — all passing
+- 15 frontend tests (component) — all passing (2 new tests added)
 
 Partial code published for continued development. Known issues: STATUS.md.
 
