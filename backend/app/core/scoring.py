@@ -7,17 +7,19 @@ The core is fully deterministic and runs offline.
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from .text import normalize_location, normalize_skill, normalize_text
 
 __all__ = [
-    "ScoringEngine",
-    "EvaluationResult",
-    "ProfileSnapshot",
-    "JobSnapshot",
     "DIMENSION_WEIGHTS",
     "EXPERIENCE_LEVEL_ORDER",
+    "ProfileSnapshot",
+    "JobSnapshot",
+    "EvaluationResult",
+    "ScoringEngine",
+    "_keyword_hits",
 ]
 
 #: Per-dimension weight in the composite score.
@@ -85,6 +87,26 @@ class EvaluationResult:
 # ---------------------------------------------------------------------------
 # Scoring engine
 # ---------------------------------------------------------------------------
+def _keyword_hits(keywords: list[str], text: str) -> list[str]:
+    """Return keywords from *keywords* that appear as whole words in *text*.
+
+    Uses word-boundary matching to avoid false positives where a keyword
+    appears as a substring of a longer word (e.g., "on-call" inside
+    "on-callback").
+
+    Both keywords and text should already be normalized (lowercased,
+    punctuation collapsed) via :func:`normalize_text` or similar.
+    """
+    hits: list[str] = []
+    for kw in keywords:
+        # Escape regex special characters, then match with word boundaries.
+        # Word boundaries are: start/end of string, or transition between
+        # word char (\w) and non-word char. Hyphens inside keywords are
+        # treated as word separators by \b, which is the desired behavior.
+        pattern = r"(?<!\w)" + re.escape(kw) + r"(?!\w)"
+        if re.search(pattern, text):
+            hits.append(kw)
+    return hits
 
 class ScoringEngine:
     """Evaluate job fit across five weighted dimensions.
@@ -220,7 +242,7 @@ class ScoringEngine:
     ) -> list[str]:
         """Return dealbreaker keywords found in the job description."""
         desc = normalize_text(job.description)
-        return [db for db in profile.dealbreakers if normalize_text(db) in desc]
+        return _keyword_hits(profile.dealbreakers, desc)
 
     # -- helper -------------------------------------------------------------
 

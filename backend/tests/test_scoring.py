@@ -212,6 +212,15 @@ class TestDealbreakers:
         result = engine.evaluate(profile, job)
         assert result.dimension_scores["dealbreakers"] == 1.0
         assert result.dealbreaker_hits == []
+    def test_word_boundary_no_false_positive(self):
+        """Dealbreaker keywords should not match as substrings of longer words."""
+        engine = ScoringEngine()
+        profile = make_profile(dealbreakers=["on-call"])
+        # "on-callback" should NOT match "on-call"
+        job = make_job(description="This role involves on-callback handling")
+        result = engine.evaluate(profile, job)
+        assert result.dimension_scores["dealbreakers"] == 1.0
+        assert result.dealbreaker_hits == []
 
 
 # ---------------------------------------------------------------------------
