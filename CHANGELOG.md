@@ -1,9 +1,25 @@
 # Changelog
 
+## 1.3.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.2.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
 
+### Fixed
+
+- **Scoring**: Dealbreaker keyword matching now uses word-boundary regex
+  `(?<!\w)...(?!\w)` to prevent false positives where a dealbreaker
+  appears as a substring of a longer word (e.g., "on-call" matching
+  inside "on-callback"). Added `_keyword_hits` helper function and
+  test `test_word_boundary_no_false_positive`.
+
+### Tests
+
+- 74 backend tests (unit + integration) — all passing
+- 15 frontend tests (component) — all passing
 ## 1.1.0 — work-in-progress checkpoint
 
 ### Changed
