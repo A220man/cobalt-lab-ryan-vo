@@ -83,16 +83,85 @@ class EvaluationService:
         self.db.refresh(evaluation)
         return evaluation
 
-    def get_ranking(self, limit: int = 50):
+    def evaluate_all_new_jobs(
+        self, profile_id: Optional[str] = None
+    ) -> list[Evaluation]:
+        """Evaluate all jobs with status ``new`` against a profile.
+
+        Returns the list of created evaluations.
+        """
+        if profile_id:
+            profile = self.db.get(Profile, profile_id)
+        else:
+            profile = (
+                self.db.query(Profile)
+                .filter(Profile.is_default.is_(True))
+                .first()
+            )
+
+        if not profile:
+            raise ValueError("No profile found")
+
+        new_jobs = self.db.query(Job).filter(Job.status == "new").all()
+        if not new_jobs:
+            return []
+
+        profile_snapshot = ProfileSnapshot(
+            skills=profile.skills,
+            experience_years=profile.experience_years,
+            experience_level=profile.experience_level,
+            preferred_locations=profile.preferred_locations,
+            role_types=profile.role_types,
+            dealbreakers=profile.dealbreakers,
+            remote_preference=profile.remote_preference,
+        )
+
+        evaluations = []
+        for job in new_jobs:
+            result = self.engine.evaluate(
+                profile_snapshot,
+                JobSnapshot(
+                    title=job.title,
+                    company=job.company,
+                    location=job.location,
+                    description=job.description,
+                    requirements=job.requirements,
+                    extracted_skills=job.extracted_skills,
+                    experience_required=job.experience_required,
+                ),
+            )
+
+            evaluation = Evaluation(
+                job_id=job.id,
+                profile_id=profile.id,
+                overall_score=result.overall_score,
+                dimension_scores=result.dimension_scores,
+                dealbreaker_hits=result.dealbreaker_hits,
+                skill_overlap=result.skill_overlap,
+                skill_match_ratio=result.skill_match_ratio,
+                explanation=result.explanation,
+            )
+            self.db.add(evaluation)
+            job.status = "scored"
+            evaluations.append(evaluation)
+
+        self.db.commit()
+        for eval in evaluations:
+            self.db.refresh(eval)
+        return evaluations
+
+    def get_ranking(
+        self, limit: int = 50, min_score: Optional[float] = None
+    ):
         """Return (Evaluation, Job) tuples sorted by score descending.
 
         Only jobs with status ``scored`` are included.
         """
-        return (
+        query = (
             self.db.query(Evaluation, Job)
             .join(Job, Evaluation.job_id == Job.id)
             .filter(Job.status == "scored")
-            .order_by(Evaluation.overall_score.desc())
-            .limit(limit)
-            .all()
         )
+        if min_score is not None:
+            query = query.filter(Evaluation.overall_score >= min_score)
+        return query.order_by(Evaluation.overall_score.desc()).limit(limit).all()

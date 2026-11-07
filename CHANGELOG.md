@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.4.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
+## 1.4.0 — work-in-progress checkpoint
+
+### Added
+
+**Backend**
+- Batch job evaluation endpoint: `POST /api/v1/evaluations/batch` evaluates all "new" jobs against the default profile (or a specific profile) in a single operation
+- Ranking filter: `GET /api/v1/ranking?min_score=X` returns only jobs meeting the minimum score threshold
+- CSV export endpoint: `GET /api/v1/ranking/export` downloads ranked jobs as CSV with all dimension scores, skill overlap, and explanations
+- `RankingExportQuery` schema with `min_score` and `limit` parameters
+- `BatchEvaluationRequest` and `BatchEvaluationResponse` schemas
+- `EvaluationService.evaluate_all_new_jobs()` method for batch processing
+- `min_score` parameter to `EvaluationService.get_ranking()`
+
+**Tests**
+- 8 new backend integration tests covering batch evaluation, min_score filtering, and CSV export
+- Total: 82 backend tests (unit + integration) — all passing
+- 15 frontend tests (component) — all passing
+
 ## 1.3.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
