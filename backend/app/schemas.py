@@ -124,6 +124,30 @@ class RankingEntry(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Batch Evaluation
+# ---------------------------------------------------------------------------
+
+class BatchEvaluationRequest(BaseModel):
+    """Request to evaluate all new jobs."""
+    profile_id: str | None = None
+
+
+class BatchEvaluationResponse(BaseModel):
+    """Response for batch evaluation."""
+    evaluated_count: int
+    evaluations: list[EvaluationRead]
+
+
+# ---------------------------------------------------------------------------
+# Ranking export
+# ---------------------------------------------------------------------------
+
+class RankingExportQuery(BaseModel):
+    """Query parameters for ranking CSV export."""
+    min_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    limit: int = Field(default=200, ge=1, le=1000)
+
+# ---------------------------------------------------------------------------
 # Misc
 # ---------------------------------------------------------------------------
 

@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-job-evaluation
+job-ranking
 
 ## Roadmap
 
@@ -38,13 +38,17 @@ Tests: `backend/tests/test_scoring.py`, `backend/tests/test_jobs_api.py`, `backe
 
 ### job-ranking — Batch job ranking with shortlist and filtering
 
-Status: planned
+Status: done
 
 Acceptance:
 - Import multiple job postings
 - Rank all jobs against the default profile in a single operation
 - Filter by minimum score threshold
 - Export ranked results as CSV
+
+Implementation: `backend/app/services/evaluation_service.py`, `backend/app/api/evaluations.py`, `backend/app/schemas.py`, `backend/tests/test_evaluations_api.py`
+
+Tests: `backend/tests/test_evaluations_api.py::test_batch_evaluate_all_new_jobs`, `backend/tests/test_evaluations_api.py::test_batch_evaluate_empty`, `backend/tests/test_evaluations_api.py::test_batch_evaluate_no_profile`, `backend/tests/test_evaluations_api.py::test_ranking_min_score_filter`, `backend/tests/test_evaluations_api.py::test_ranking_min_score_zero_includes_all`, `backend/tests/test_evaluations_api.py::test_export_ranking_csv`, `backend/tests/test_evaluations_api.py::test_export_ranking_csv_with_min_score`, `backend/tests/test_evaluations_api.py::test_export_ranking_csv_empty`
 
 ### application-tracking — Application status tracking with state machine
 
