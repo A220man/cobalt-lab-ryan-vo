@@ -2,9 +2,17 @@ import { useEffect, useState } from 'react';
 import { apiClient } from '../api/client';
 import JobForm from '../components/JobForm';
 import EvaluationResult from '../components/EvaluationResult';
-import type { Evaluation, Job, RankingEntry } from '../types';
+import type { Evaluation, Job, RankingEntry, BatchEvaluationResponse } from '../types';
 
 export default function Dashboard() {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [ranking, setRanking] = useState<RankingEntry[]>([]);
+  const [evaluations, setEvaluations] = useState<Record<string, Evaluation>>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [evaluatingJobId, setEvaluatingJobId] = useState<string | null>(null);
+  const [batchEvaluating, setBatchEvaluating] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [ranking, setRanking] = useState<RankingEntry[]>([]);
   const [evaluations, setEvaluations] = useState<Record<string, Evaluation>>({});

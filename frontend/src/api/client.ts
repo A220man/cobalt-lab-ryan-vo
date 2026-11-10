@@ -4,10 +4,12 @@
  * All endpoints are documented in the OpenAPI spec served at ``/docs``.
  */
 import type {
+  BatchEvaluationResponse,
   Evaluation,
   HealthResponse,
   Job,
   Profile,
+  RankingExportQuery,
   RankingEntry,
 } from '../types';
 
@@ -76,4 +78,19 @@ export const apiClient = {
   },
 
   getRanking: () => request<RankingEntry[]>('/api/v1/ranking'),
+
+  evaluateAllNewJobs: (profileId?: string) =>
+    request<BatchEvaluationResponse>('/api/v1/evaluations/batch', {
+      method: 'POST',
+      body: JSON.stringify({ profile_id: profileId }),
+    }),
+
+  exportRanking: (params?: RankingExportQuery) => {
+    const qs = new URLSearchParams();
+    if (params?.min_score !== undefined) qs.set('min_score', String(params.min_score));
+    if (params?.limit !== undefined) qs.set('limit', String(params.limit));
+    return request<Blob>(`/api/v1/ranking/export?${qs.toString()}`, {
+      headers: { 'Accept': 'text/csv' },
+    });
+  },
 };
