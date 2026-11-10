@@ -67,7 +67,17 @@ export interface RankingEntry {
   created_at: string;
 }
 
-/** Form-shaped subset for profile upsert. */
+export interface BatchEvaluationResponse {
+  evaluated_count: number;
+  evaluations: Evaluation[];
+}
+
+export interface RankingExportQuery {
+  min_score?: number;
+  limit?: number;
+}
+
+ /** Form-shaped subset for profile upsert. */
 export type ProfileForm = Omit<
   Profile,
   'id' | 'is_default' | 'created_at' | 'updated_at'
