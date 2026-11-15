@@ -1,4 +1,5 @@
 """Job posting API endpoints."""
+from datetime import date
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -60,4 +61,41 @@ def get_job(job_id: str, db: Session = Depends(get_db)):
     job = db.get(Job, job_id)
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
+    return job
+
+
+@router.post("/{job_id}/expire")
+def expire_job(job_id: str, db: Session = Depends(get_db)):
+    """Mark job as expired if deadline has passed."""
+    job = db.get(Job, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    if job.deadline and job.deadline <= date.today():
+        job.status = "expired"
+        db.commit()
+        db.refresh(job)
+    return job
+
+
+@router.post("/{job_id}/fail")
+def fail_job(job_id: str, db: Session = Depends(get_db)):
+    """Mark job as fetch_failed."""
+    job = db.get(Job, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    job.status = "fetch_failed"
+    db.commit()
+    db.refresh(job)
+    return job
+
+
+@router.post("/{job_id}/retry")
+def retry_job(job_id: str, db: Session = Depends(get_db)):
+    """Retry a fetch_failed job, resetting status to new."""
+    job = db.get(Job, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    job.status = "new"
+    db.commit()
+    db.refresh(job)
     return job
