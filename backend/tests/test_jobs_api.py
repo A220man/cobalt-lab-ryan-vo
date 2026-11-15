@@ -1,5 +1,6 @@
 """Integration tests for the job API."""
 from app.models.job import Job
+from datetime import date
 
 
 def _sample_job(**overrides):
@@ -80,3 +81,72 @@ def test_create_job_duplicate_source(client):
 def test_create_job_missing_required_field(client):
     resp = client.post("/api/v1/jobs", json={"title": "No source"})
     assert resp.status_code == 422
+
+
+# ---------------------------------------------------------------------------
+# Application tracking (status transitions)
+# ---------------------------------------------------------------------------
+
+def test_expire_job_past_deadline(client):
+    """Mark a job as expired when its deadline has passed."""
+    past_date = "2025-11-15"
+    job_data = _sample_job(deadline=past_date)
+    resp = client.post("/api/v1/jobs", json=job_data)
+    assert resp.status_code == 200
+    job_id = resp.json()["id"]
+
+    # Expire the job
+    resp = client.post(f"/api/v1/jobs/{job_id}/expire")
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "expired"
+
+
+def test_expire_job_future_deadline(client):
+    """Do not change status when deadline is in the future."""
+    future_date = "2026-12-31"
+    job_data = _sample_job(deadline=future_date)
+    resp = client.post("/api/v1/jobs", json=job_data)
+    assert resp.status_code == 200
+    job_id = resp.json()["id"]
+
+    resp = client.post(f"/api/v1/jobs/{job_id}/expire")
+    assert resp.status_code == 200
+    # Status should remain "new"
+    assert resp.json()["status"] == "new"
+
+
+def test_fail_job(client):
+    """Mark a job as fetch_failed."""
+    job_data = _sample_job()
+    resp = client.post("/api/v1/jobs", json=job_data)
+    assert resp.status_code == 200
+    job_id = resp.json()["id"]
+
+    resp = client.post(f"/api/v1/jobs/{job_id}/fail")
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "fetch_failed"
+
+
+def test_fail_job_not_found(client):
+    resp = client.post("/api/v1/jobs/invalid-id/fail")
+    assert resp.status_code == 404
+
+
+def test_expire_job_not_found(client):
+    resp = client.post("/api/v1/jobs/invalid-id/expire")
+    assert resp.status_code == 404
+
+
+def test_retry_job(client):
+    """Retry a fetch_failed job, resetting status to new."""
+    # Create job and mark as fetch_failed
+    job_data = _sample_job()
+    resp = client.post("/api/v1/jobs", json=job_data)
+    job_id = resp.json()["id"]
+    resp = client.post(f"/api/v1/jobs/{job_id}/fail")
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "fetch_failed"
+    # Retry the job
+    resp = client.post(f"/api/v1/jobs/{job_id}/retry")
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "new"
