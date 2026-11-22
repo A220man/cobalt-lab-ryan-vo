@@ -99,3 +99,11 @@ def retry_job(job_id: str, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(job)
     return job
+
+@router.get("/report/fetch-failed", response_model=list[JobRead])
+def list_fetch_failed_jobs(
+    db: Session = Depends(get_db),
+):
+    """Report: list unassessed fetch_failed jobs separately."""
+    jobs = db.query(Job).filter(Job.status == "fetch_failed").all()
+    return jobs
