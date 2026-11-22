@@ -52,7 +52,7 @@ Tests: `backend/tests/test_evaluations_api.py::test_batch_evaluate_all_new_jobs`
 
 ### application-tracking — Application status tracking with state machine
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - Jobs transition through new -> scored -> expired / fetch_failed states
