@@ -52,13 +52,17 @@ Tests: `backend/tests/test_evaluations_api.py::test_batch_evaluate_all_new_jobs`
 
 ### application-tracking — Application status tracking with state machine
 
-Status: in_progress
+Status: done
 
 Acceptance:
 - Jobs transition through new -> scored -> expired / fetch_failed states
 - Expired jobs (deadline passed) are distinguished from fetch_failed jobs
 - fetch_failed jobs remain eligible for retry
 - Step 5 report lists unassessed fetch_failed jobs separately
+
+Implementation: `backend/app/models/job.py`, `backend/app/models/profile.py`, `backend/app/models/evaluation.py`, `backend/app/services/evaluation_service.py`, `backend/app/api/jobs.py`, `backend/app/api/evaluations.py`, `backend/tests/test_jobs_api.py`, `backend/tests/test_evaluations_api.py`
+
+Tests: `backend/tests/test_jobs_api.py::test_expire_job_past_deadline`, `backend/tests/test_jobs_api.py::test_expire_job_future_deadline`, `backend/tests/test_jobs_api.py::test_fail_job`, `backend/tests/test_jobs_api.py::test_retry_job`, `backend/tests/test_evaluations_api.py::test_end_to_end_evaluation`
 
 ### auth-sso — Keycloak OIDC authentication with SAML brokering
 
