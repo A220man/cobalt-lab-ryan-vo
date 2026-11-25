@@ -70,7 +70,7 @@ def expire_job(job_id: str, db: Session = Depends(get_db)):
     job = db.get(Job, job_id)
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
-    if job.deadline and job.deadline <= date.today():
+    if job.deadline and job.deadline < date.today():
         job.status = "expired"
         db.commit()
         db.refresh(job)
@@ -91,10 +91,19 @@ def fail_job(job_id: str, db: Session = Depends(get_db)):
 
 @router.post("/{job_id}/retry")
 def retry_job(job_id: str, db: Session = Depends(get_db)):
-    """Retry a fetch_failed job, resetting status to new."""
+    """Retry a fetch_failed job, resetting status to new.
+
+    Only jobs in the ``fetch_failed`` state may be retried; retrying a job
+    in any other state is a conflict (409) to preserve the state machine.
+    """
     job = db.get(Job, job_id)
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
+    if job.status != "fetch_failed":
+        raise HTTPException(
+            status_code=409,
+            detail=f"Only fetch_failed jobs can be retried (current status: {job.status})",
+        )
     job.status = "new"
     db.commit()
     db.refresh(job)

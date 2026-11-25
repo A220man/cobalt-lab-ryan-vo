@@ -150,3 +150,30 @@ def test_retry_job(client):
     resp = client.post(f"/api/v1/jobs/{job_id}/retry")
     assert resp.status_code == 200
     assert resp.json()["status"] == "new"
+
+
+def test_expire_job_deadline_today_stays_new(client):
+    """A job whose deadline is today is still valid and must not expire."""
+    today = date.today().isoformat()
+    job_data = _sample_job(deadline=today)
+    resp = client.post("/api/v1/jobs", json=job_data)
+    assert resp.status_code == 200
+    job_id = resp.json()["id"]
+
+    resp = client.post(f"/api/v1/jobs/{job_id}/expire")
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "new"
+
+
+def test_retry_non_fetch_failed_job_conflicts(client):
+    """Retrying a job that is not fetch_failed must be rejected (409)."""
+    job_data = _sample_job()
+    resp = client.post("/api/v1/jobs", json=job_data)
+    job_id = resp.json()["id"]
+
+    # Job is still 'new' -> retry must conflict, not silently reset.
+    resp = client.post(f"/api/v1/jobs/{job_id}/retry")
+    assert resp.status_code == 409
+    # Status unchanged.
+    resp = client.get(f"/api/v1/jobs/{job_id}")
+    assert resp.json()["status"] == "new"
